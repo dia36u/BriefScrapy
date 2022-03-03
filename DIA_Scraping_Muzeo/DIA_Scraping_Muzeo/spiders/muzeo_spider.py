@@ -6,14 +6,18 @@ def splitURL(txt):
     content = my_file.read()
     url = content.splitlines()
     return url
-
+ 
 class MuzeoSpider(scrapy.Spider):
     name = "muzeo"
+    start_urls = splitURL(r"URL_toscrap.txt")
 
-    def start_requests(self):
-        start_urls = splitURL("C:/Users/utilisateur/OneDrive - Simplonformations.co/WebScraping/DIA_Scraping_Muzeo/URL_toscrap.txt")
-    
     def parse(self, response):
+         for oeuvre in response.css('div.oeuvre_container'):
+       
+       #Recupère le titre, l'auteur, l'url de l'image et le prix sur la liste d'URL 
             yield {
-                'title': response.css('div.title').get()
+                'title': oeuvre.css("h3 a::attr(title)").get(),
+                'author': oeuvre.css("div.oeuvre_container h3 a span::text").get(),
+                'urlImage': oeuvre.css("h3 a::attr(href)").get(),
+                'price' : oeuvre.css("div.oeuvre_container div::text").get()
             }
